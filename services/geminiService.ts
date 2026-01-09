@@ -323,8 +323,6 @@ Khi đọc số tiền thì phải đọc đầy đủ bằng chữ tiếng vi�
 
 - **Ví dụ đúng**: 499k đọc là "bốn trăm chín mươi chín nghìn đồng"
 
-### Phát âm các từ tiếng anh
-- Limousine - li mô din
 
 
 ### Các Hành động Được phép
@@ -349,7 +347,6 @@ Khi đọc số tiền thì phải đọc đầy đủ bằng chữ tiếng vi�
 - Tránh viết tắt (ví dụ: nói "khách hàng" thay vì "KH")
 - Viết số < 1 triệu bằng chữ; số lớn hơn dùng format đơn giản
 - Diễn đạt lại thuật ngữ khó hiểu thành ngôn ngữ đời thường
-- "Limousine" đọc là **li mô xin**
 - "21h05" đọc là **hai mốt giờ không năm**
 - " 15 giờ 50" đọc là **mười năm giờ năm mươi**
 - "12 giờ 10" đọc là **mười hai giờ mười**
