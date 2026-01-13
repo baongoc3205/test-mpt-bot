@@ -1,25 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Minimize2 } from 'lucide-react';
-import { sendMessageToGemini } from '../services/geminiService';
-import { ChatMessage } from '../types';
+import React, { useState, useRef, useEffect } from "react";
+import { MessageCircle, X, Send, Bot, User, Minimize2 } from "lucide-react";
+import { sendMessageToGemini } from "../services/geminiService";
+import { ChatMessage } from "../types";
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: 'welcome',
-      role: 'model',
-      text: 'Dạ MP Transformation xin chào anh/chị ạ! Em có thể giúp gì cho mình về các giải pháp tổng đài và CSKH không ạ?',
-      timestamp: new Date()
-    }
+      id: "welcome",
+      role: "model",
+      text: "Dạ MP Transformation xin chào anh/chị ạ! Em có thể giúp gì cho mình về các giải pháp tổng đài và CSKH không ạ?",
+      timestamp: new Date(),
+    },
   ]);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const Chatbot: React.FC = () => {
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-        inputRef.current.focus();
+      inputRef.current.focus();
     }
   }, [isOpen]);
 
@@ -37,51 +37,59 @@ const Chatbot: React.FC = () => {
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       text: inputText,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputText("");
     setIsLoading(true);
 
     const aiMessageId = (Date.now() + 1).toString();
     const aiMessagePlaceholder: ChatMessage = {
       id: aiMessageId,
-      role: 'model',
-      text: '', 
-      timestamp: new Date()
+      role: "model",
+      text: "",
+      timestamp: new Date(),
     };
-    
-    setMessages(prev => [...prev, aiMessagePlaceholder]);
+
+    setMessages((prev) => [...prev, aiMessagePlaceholder]);
 
     try {
       const stream = await sendMessageToGemini(userMessage.text);
-      
-      let fullText = '';
+
+      let fullText = "";
       for await (const chunk of stream) {
         fullText += chunk;
-        setMessages(prev => prev.map(msg => 
-          msg.id === aiMessageId ? { ...msg, text: fullText } : msg
-        ));
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiMessageId ? { ...msg, text: fullText } : msg
+          )
+        );
       }
     } catch (error) {
-      setMessages(prev => prev.map(msg => 
-        msg.id === aiMessageId ? { ...msg, text: "Sorry, I'm having trouble connecting to the network right now. Please try again later." } : msg
-      ));
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === aiMessageId
+            ? {
+                ...msg,
+                text: "Sorry, I'm having trouble connecting to the network right now. Please try again later.",
+              }
+            : msg
+        )
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSendMessage();
+    if (e.key === "Enter") handleSendMessage();
   };
 
-  // Function to clean text for display (remove tags like |CHAT, |ENDCALL)
   const cleanText = (text: string) => {
-    return text.replace(/\|[A-Z]+$/, '').trim();
+    return text.replace(/\|[A-Z]+$/, "").trim();
   };
 
   return (
@@ -118,12 +126,18 @@ const Chatbot: React.FC = () => {
               </div>
             </div>
             <div className="flex gap-2">
-                 <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded transition">
-                  <Minimize2 size={18} />
-                </button>
-                 <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded transition">
-                  <X size={18} />
-                </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="hover:bg-white/10 p-1 rounded transition"
+              >
+                <Minimize2 size={18} />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="hover:bg-white/10 p-1 rounded transition"
+              >
+                <X size={18} />
+              </button>
             </div>
           </div>
 
@@ -132,37 +146,54 @@ const Chatbot: React.FC = () => {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
                 <div
                   className={`max-w-[85%] rounded-2xl p-3 text-sm shadow-sm ${
-                    msg.role === 'user'
-                      ? 'bg-mpt-blue text-white rounded-br-none'
-                      : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+                    msg.role === "user"
+                      ? "bg-mpt-blue text-white rounded-br-none"
+                      : "bg-white text-gray-800 border border-gray-100 rounded-bl-none"
                   }`}
                 >
-                  {msg.role === 'model' && (
+                  {msg.role === "model" && (
                     <div className="flex items-center gap-1 mb-1 text-xs text-mpt-orange font-bold uppercase">
-                       MP Assistant
+                      MP Assistant
                     </div>
                   )}
-                  <p className="whitespace-pre-wrap leading-relaxed">{cleanText(msg.text)}</p>
-                  <span className={`text-[10px] block mt-1 ${msg.role === 'user' ? 'text-blue-200' : 'text-gray-400'}`}>
-                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <p className="whitespace-pre-wrap leading-relaxed">
+                    {cleanText(msg.text)}
+                  </p>
+                  <span
+                    className={`text-[10px] block mt-1 ${
+                      msg.role === "user" ? "text-blue-200" : "text-gray-400"
+                    }`}
+                  >
+                    {msg.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               </div>
             ))}
             {isLoading && (
-               <div className="flex justify-start">
-                   <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-none p-3 shadow-sm">
-                       <div className="flex space-x-1">
-                           <div className="w-2 h-2 bg-mpt-blue rounded-full animate-bounce"></div>
-                           <div className="w-2 h-2 bg-mpt-blue rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                           <div className="w-2 h-2 bg-mpt-blue rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
-                       </div>
-                   </div>
-               </div>
+              <div className="flex justify-start">
+                <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-none p-3 shadow-sm">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-mpt-blue rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 bg-mpt-blue rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-mpt-blue rounded-full animate-bounce"
+                      style={{ animationDelay: "0.4s" }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
             )}
             <div ref={messagesEndRef} />
           </div>
@@ -187,9 +218,6 @@ const Chatbot: React.FC = () => {
               >
                 <Send size={20} />
               </button>
-            </div>
-            <div className="text-center mt-2">
-                <p className="text-[10px] text-gray-400">Powered by Gemini AI</p>
             </div>
           </div>
         </div>
